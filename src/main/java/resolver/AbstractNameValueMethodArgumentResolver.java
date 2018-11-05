@@ -54,6 +54,7 @@ public abstract class AbstractNameValueMethodArgumentResolver implements Dispatc
     }
 
     protected void handleResolvedValue(Object arg, String name, MethodParameter parameter, DispatchRequest webRequest) {
+        //do some other handle
     }
 
     protected abstract NamedValueInfo createNamedValueInfo(MethodParameter parameter);

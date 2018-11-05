@@ -68,9 +68,10 @@ public class ParamNameDiscover {
     }
 
     @Command(1)
-    public static void test1(@RequestAttribute Sender sender, @RequestParam String hello, int world, @RequestParam("yes") String come) {
+    public static void test1(@RequestBody(level = 2) Seller seller, @RequestAttribute Sender sender, @RequestParam String hello, int world, @RequestParam("yes") String come) {
         System.out.println(hello + " " + world + " " + come);
         sender.send("apple");
+        System.out.println(seller.toString());
     }
 
     @Command({2, 3})
