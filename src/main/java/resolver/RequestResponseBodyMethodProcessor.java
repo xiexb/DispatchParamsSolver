@@ -21,7 +21,7 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
     public boolean supportsParameter(MethodParameter parameter) {
         if (parameter.hasParameterAnnotation(RequestBody.class)) {
             Class<?> nestedParameterType = parameter.nestedIfOptional().getNestedParameterType();
-            return nestedParameterType.getClass().isAnnotationPresent(DispatcherConverter.class);
+            return nestedParameterType.isAnnotationPresent(DispatcherConverter.class);
         }
         return false;
     }
@@ -33,9 +33,8 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
         return adaptArgumentIfNecessary(arg, parameter);
     }
 
-
     protected <T> Object readWithMessageConverters(DispatchRequest request, MethodParameter parameter) throws DispatcherMessageNotReadableException {
-        DispatchMapMessage inputMessage = new JsonObjectDispatcherMapMessage(request);
+        DispatchMessage inputMessage = new JsonObjectDispatcherMessage(request, parameter);
         Object arg = readWithMessageConverters(inputMessage, parameter, parameter.getParameterType());
         if (arg == null) {
             if (checkRequired(parameter)) {

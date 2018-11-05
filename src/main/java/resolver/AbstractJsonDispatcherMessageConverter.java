@@ -4,7 +4,7 @@ package resolver;
  * @author Administrator
  * @date 2018/11/1 0001
  */
-public abstract class AbstractGenericDispatcherMessageConverter<T> implements DispatcherMessageConverter<T> {
+public abstract class AbstractJsonDispatcherMessageConverter<T> implements DispatcherMessageConverter<T> {
     protected abstract boolean supports(Class<?> clazz);
 
     @Override

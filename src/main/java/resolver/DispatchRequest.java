@@ -20,6 +20,7 @@ public class DispatchRequest {
     private String nativeMsg;
 
     public DispatchRequest(String nativeMsg) {
+        this.nativeMsg = nativeMsg;
         JSONObject data = JSONObject.parseObject(nativeMsg);
         for (String key : data.keySet()) {
             parameters.put(key, data.get(key));

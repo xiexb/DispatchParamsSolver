@@ -1,12 +1,15 @@
 package resolver;
 
+import com.alibaba.fastjson.JSONObject;
 import exception.DispatcherMessageNotReadableException;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,20 +28,26 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
         return (parameter.isOptional() ? OptionalResolver.resolveValue(arg) : arg);
     }
 
-    protected <T> Object readWithMessageConverters(DispatchMapMessage inputMessage, MethodParameter parameter, Type targetType) {
-        Class<?> contextClass = (parameter != null ? parameter.getContainingClass() : null);
+    protected <T> Object readWithMessageConverters(DispatchMessage inputMessage, MethodParameter parameter, Type targetType) {
         Class<T> targetClass = (targetType instanceof Class ? (Class<T>) targetType : null);
+        if (targetClass == null) {
+            ResolvableType resolvableType = (parameter != null ?
+                    ResolvableType.forMethodParameter(parameter) : ResolvableType.forType(targetType));
+            targetClass = (Class<T>) resolvableType.resolve();
+        }
+
         Object body = NO_VALUE;
         try {
             for (DispatcherMessageConverter<?> converter : this.messageConverters) {
-                AbstractGenericDispatcherMessageConverter<?> genericConverter = (AbstractGenericDispatcherMessageConverter<?>) converter;
-                 if (genericConverter.canRead(contextClass)) {
-                    if (inputMessage.getBody() != null) {
-                        body = genericConverter.read(contextClass, inputMessage);
-                    } else {
-                        System.out.println("message body is empty");
+                if (targetClass != null) {
+                    if (converter.canRead(targetClass)) {
+                        JSONObject messageBody = inputMessage.getBody();
+                        if (messageBody != null) {
+                            body = converter.read(targetClass, messageBody);
+                        } else {
+                            System.out.println("message body is empty");
+                        }
                     }
-                    break;
                 }
             }
         } catch (IOException ex) {
